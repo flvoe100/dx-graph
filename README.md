@@ -1,2 +1,2 @@
-# dx-graph
-Second version of loading graphs in dxram
+# dx-graphloader
+A dxapp for testing my graph loading service for dxram

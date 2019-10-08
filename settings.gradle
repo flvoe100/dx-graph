@@ -1,0 +1,16 @@
+rootProject.name = 'dx-graphloader'
+
+boolean isDevelop = true
+
+
+if (isDevelop && gradle.parent != null) {
+    return
+}
+
+if (isDevelop && new File('../dxram').exists()) {
+    includeBuild '../dxram'
+}
+
+if (isDevelop && new File('../dxmem').exists()) {
+    includeBuild('../dxmem')
+}
