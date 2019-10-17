@@ -1,10 +1,4 @@
-package de.hhu.bsinfo.dxgraphloader.formats;
-
-import de.hhu.bsinfo.dxgraphloader.LDBC.LDBCEdgeLoader;
-import de.hhu.bsinfo.dxgraphloader.LDBC.LDBCPropertiesLoader;
-import de.hhu.bsinfo.dxgraphloader.LDBC.LDBCVertexLoader;
-import de.hhu.bsinfo.dxgraphloader.model.FileLoader;
-import de.hhu.bsinfo.dxram.app.Application;
+package de.hhu.bsinfo.dxram.loading;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,32 +13,33 @@ public class LDBCFormat extends Format {
     private String m_datasetName;
 
 
-
-
     public LDBCFormat(String p_directoryPath, String p_datasetName) {
         super(true, true, LDBCPropertiesLoader.class, LDBCVertexLoader.class, LDBCEdgeLoader.class);
         this.m_directoryPath = p_directoryPath;
         this.m_datasetName = p_datasetName;
     }
 
+    public LDBCFormat(boolean hasVertexFile, boolean hasPropertiesFile, String m_directoryPath, String m_datasetName) {
+        super(hasVertexFile, hasPropertiesFile, LDBCPropertiesLoader.class, LDBCVertexLoader.class, LDBCEdgeLoader.class);
+        this.m_directoryPath = m_directoryPath;
+        this.m_datasetName = m_datasetName;
+    }
+
     @Override
     public Path getVertexFilePath() {
-        return Paths.get(this.m_directoryPath, SPLITTER, this.m_datasetName, SPLITTER, VERTEX_FILE_POSTFIX);
+        System.out.println(this.m_datasetName);
+        System.out.println("m_directoryPath = " + m_directoryPath);
+        return Paths.get(this.m_directoryPath, this.m_datasetName + SPLITTER + VERTEX_FILE_POSTFIX);
     }
 
     @Override
     public Path getEdgeFilePath() {
-        return Paths.get(this.m_directoryPath, SPLITTER, this.m_datasetName, SPLITTER, EDGE_FILE_POSTFIX);
+        return Paths.get(this.m_directoryPath, this.m_datasetName + SPLITTER + EDGE_FILE_POSTFIX);
     }
 
     @Override
     public Path getPropertiesFilePath() {
-        return Paths.get(this.m_directoryPath, SPLITTER, this.m_datasetName, SPLITTER, PROP_FILE_POSTFIX);
-    }
-
-    @Override
-    public FileLoader getVertexLoader(Application p_context) {
-        return new LDBCVertexLoader();
+        return Paths.get(this.m_directoryPath, this.m_datasetName + SPLITTER + PROP_FILE_POSTFIX);
     }
 
 }

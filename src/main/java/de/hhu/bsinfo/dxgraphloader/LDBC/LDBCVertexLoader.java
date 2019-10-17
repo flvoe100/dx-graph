@@ -1,58 +1,57 @@
-package de.hhu.bsinfo.dxgraphloader.LDBC;
+package de.hhu.bsinfo.dxram.loading;
 
-import de.hhu.bsinfo.dxgraphloader.model.FileLoader;
-import de.hhu.bsinfo.dxgraphloader.model.Graph;
-import de.hhu.bsinfo.dxgraphloader.model.SimpleVertex;
-import de.hhu.bsinfo.dxgraphloader.model.Vertex;
 import de.hhu.bsinfo.dxram.chunk.ChunkLocalService;
 import de.hhu.bsinfo.dxram.chunk.ChunkService;
+import de.hhu.bsinfo.dxram.net.NetworkService;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.stream.LongStream;
 
-public class LDBCVertexLoader implements FileLoader {
+public class LDBCVertexLoader extends FileLoader {
 
-    private ChunkLocalService m_chunkLocalService;
-    private ChunkService m_chunkService;
-    private Class m_vertexClass = SimpleVertex.class;
 
-    public LDBCVertexLoader(ChunkLocalService m_chunkLocalService, ChunkService m_chunkService, Class vertexClass) {
-        this.m_chunkLocalService = m_chunkLocalService;
-        this.m_chunkService = m_chunkService;
-        this.m_vertexClass = vertexClass;
+    public LDBCVertexLoader() {
+    }
+
+    public LDBCVertexLoader(ChunkLocalService p_chunkLocalService, ChunkService p_chunkService, short p_nodeID) {
+        super(p_chunkLocalService, p_chunkService, p_nodeID);
     }
 
     @Override
-    public void readFile(Path p_file, Graph p_graph) {
-        //TODO: workaround forcreating custom vertex objects
+    void readFile(Path p_filePath, Graph p_graph) {
+
+    }
+
+    @Override
+    VerticesTaskResponse readVerticesFile(Path p_filePath, short p_masterNodeId) {
+        //TODO: Improving this -> implement own parallel implementation
+        long min = Long.MAX_VALUE;
+        long max = Long.MIN_VALUE;
+
         try {
-            Files.lines(p_file)
+            long start = System.nanoTime();
+            Files.lines(p_filePath)
                     .mapToLong(line -> Long.parseLong(line.split("\\s")[0]))
                     .forEach(vid -> {
-                        Vertex vertex = null;
-                        try {
-                            vertex = (Vertex) m_vertexClass.newInstance();
-                            m_chunkLocalService.createLocal().create(vertex, vid); //TODO
-                            m_chunkService.put().put(vertex);
-                        } catch (InstantiationException e) {
-                            e.printStackTrace();
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
+                        Vertex vertex = new SimpleVertex(vid);
 
+
+                        m_chunkLocalService.createLocal().create(vertex, vid); //TODO
+                        m_chunkService.put().put(vertex);
                     });
+            min = Long.parseLong(Files.lines(p_filePath).findFirst().get());
+            max = Long.parseLong(Files.lines(p_filePath).reduce((first, second) -> second).orElse("0"));
+            System.out.println("Loading time: " + (System.nanoTime() - start  ));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return new VerticesTaskResponse(p_masterNodeId, m_nodeID, min, max);
     }
 
+    @Override
+    void readFile(Path p_filePath, GraphLoadingMetaData p_metaData) {
 
-    public void setChunkLocalService(ChunkLocalService p_chunkLocalService) {
-        this.m_chunkLocalService = p_chunkLocalService;
-    }
-
-    public void setChunkService(ChunkService p_chunkService) {
-        this.m_chunkService = p_chunkService;
     }
 }
