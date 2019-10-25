@@ -1,4 +1,4 @@
-rootProject.name = 'dx-graphloader'
+rootProject.name = 'dx-graph'
 
 boolean isDevelop = true
 

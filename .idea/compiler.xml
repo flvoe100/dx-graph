@@ -4,5 +4,9 @@
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="dx-graphloader.main" target="1.8" />
+      <module name="dx-graphloader.test" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
