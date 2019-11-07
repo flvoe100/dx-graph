@@ -6,7 +6,7 @@ import de.hhu.bsinfo.dxutils.serialization.Importer;
 public class SimpleVertex extends Vertex {
     private long extID;
 
-    public SimpleVertex(){
+    public SimpleVertex() {
         super();
     }
 
@@ -15,11 +15,6 @@ public class SimpleVertex extends Vertex {
         this.extID = extID;
     }
 
-    public SimpleVertex(long extID) {
-        this.extID = extID;
-    }
-
-
 
     public long getExtID() {
         return extID;
@@ -27,14 +22,13 @@ public class SimpleVertex extends Vertex {
 
     @Override
     public void exportObject(Exporter p_exporter) {
-        super.exportObject(p_exporter);
         p_exporter.writeLong(extID);
     }
-
     @Override
     public void importObject(Importer p_importer) {
         extID = p_importer.readLong(extID);
     }
+
 
     @Override
     public int sizeofObject() {

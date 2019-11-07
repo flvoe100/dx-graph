@@ -33,14 +33,14 @@ public class LDBCEdgeLoader extends FileLoader {
     public LDBCEdgeLoader() {
     }
 
-    public LDBCEdgeLoader(int p_numberOfEdges, GraphLoadingMetaData p_metaData, ChunkLocalService p_chunkLocalService, ChunkService p_chunkService, short p_nodeID) {
+    public LDBCEdgeLoader(Graph p_graph, GraphLoadingMetaData p_metaData, ChunkLocalService p_chunkLocalService, ChunkService p_chunkService, short p_nodeID) {
         super(p_chunkLocalService, p_chunkService, p_nodeID);
         this.m_metaData = p_metaData;
         this.m_chunkLocalService = p_chunkLocalService;
         this.m_chunkService = p_chunkService;
         m_buffer = new LinkedBlockingDeque<>(10_000_000);
-        this.m_countDownLatch = new CountDownLatch(p_numberOfEdges);
-        m_consumer = new EdgesLoadingConsumer(m_buffer, m_countDownLatch, m_chunkLocalService, m_chunkService);
+        this.m_countDownLatch = new CountDownLatch(p_graph.getNumberOfEdgesOfSlave(p_nodeID));
+        m_consumer = new EdgesLoadingConsumer(m_buffer, m_countDownLatch, p_graph.getNumberOfVerticesOfSlave(p_nodeID), p_nodeID, m_chunkLocalService, m_chunkService);
     }
 
 
@@ -75,7 +75,7 @@ public class LDBCEdgeLoader extends FileLoader {
                     }
                 }
                 if (sinkNodeID == -1) {
-                    LOGGER.error("Belonging vertex id of sink of edge [%d, %d]", from, to);
+                    //    LOGGER.error("Belonging vertex id of sink of edge [%d, %d]", from, to);
                 }
                 pair = new Pair<>(ChunkID.getChunkID(m_nodeID, from), ChunkID.getChunkID(sinkNodeID, to));
                 m_buffer.put(pair);

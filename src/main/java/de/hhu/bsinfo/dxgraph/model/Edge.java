@@ -23,6 +23,14 @@ public abstract class Edge extends AbstractChunk {
         this.m_sinkID = p_sinkID;
     }
 
+    public long getSourceID() {
+        return m_sourceID;
+    }
+
+    public long getSinkID() {
+        return m_sinkID;
+    }
+
     @Override
     public void exportObject(Exporter p_exporter) {
         p_exporter.writeLong(m_sourceID);

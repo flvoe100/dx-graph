@@ -33,7 +33,6 @@ public class LDBCPropertiesLoader extends FileLoader {
                             String[] split = relevantLines.split(PREFIX_NUM_OF_VERTICES)[1].split("\\s");
                             int[] numberOfVerticesPerSlave = new int[split.length];
                             for (int i = 0; i < split.length; i++) {
-                                System.out.println("split[i] = " + split[i]);
                                 numberOfVerticesPerSlave[i] = Integer.parseInt(split[i]);
                             }
                             p_graph.setNumberOfVertices(numberOfVerticesPerSlave);
@@ -42,7 +41,6 @@ public class LDBCPropertiesLoader extends FileLoader {
                             String[] split = relevantLines.split(PREFIX_NUM_OF_EDGES)[1].split("\\s");
                             int[] numberOfEdgesPerSlave = new int[split.length];
                             for (int i = 0; i < split.length; i++) {
-                                System.out.println("split[i] = " + split[i]);
                                 numberOfEdgesPerSlave[i] = Integer.parseInt(split[i]);
                             }
                             p_graph.setNumberOfEdges(numberOfEdgesPerSlave);

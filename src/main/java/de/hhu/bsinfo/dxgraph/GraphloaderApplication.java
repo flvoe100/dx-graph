@@ -2,19 +2,19 @@ package de.hhu.bsinfo.dxgraph;
 
 
 import de.hhu.bsinfo.dxgraph.formats.LDBCFormat;
-import de.hhu.bsinfo.dxgraph.model.GraphLoadingMetaData;
+import de.hhu.bsinfo.dxgraph.model.SimpleEdge;
 import de.hhu.bsinfo.dxgraph.model.SimpleVertex;
-import de.hhu.bsinfo.dxgraph.util.Util;
 import de.hhu.bsinfo.dxmem.data.ChunkID;
 import de.hhu.bsinfo.dxram.app.Application;
+import de.hhu.bsinfo.dxram.boot.BootService;
+import de.hhu.bsinfo.dxram.chunk.ChunkLocalService;
 import de.hhu.bsinfo.dxram.chunk.ChunkService;
 import de.hhu.bsinfo.dxram.engine.DXRAMVersion;
 import de.hhu.bsinfo.dxram.generated.BuildConfig;
-import de.hhu.bsinfo.dxram.ms.MasterSlaveComputeService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -48,22 +48,35 @@ public class GraphloaderApplication extends Application {
         DxGraph graph = new DxGraph(this, format, true);
 
         graph.loadGraph();
-        GraphLoadingMetaData metaData = graph.getMetaData();
 
-
-
+        BootService bootService = this.getService(BootService.class);
         ChunkService chunkService = this.getService(ChunkService.class);
-        MasterSlaveComputeService ms = this.getService(MasterSlaveComputeService.class);
-        ArrayList<Short> slaves = ms.getStatusMaster().getConnectedSlaves();
+        short ownID = bootService.getNodeID();
+        List<Short> peers = bootService.getOnlinePeerNodeIDs();
 
-        SimpleVertex v = new SimpleVertex();
-        short nodeID = -1483;
-        v.setID(ChunkID.getChunkID(nodeID, 49467));
-        chunkService.get().get(v);
+        for (short nodeID : peers) {
+            if (ownID != nodeID) {
+                SimpleVertex v = new SimpleVertex();
+                v.setID(ChunkID.getChunkID(nodeID, 702));
+                chunkService.get().get(v);
+                System.out.println("Get on master");
+                System.out.println("v.getExtID() = " + v.getExtID());
+                System.out.println("ChunkID.getLocalID(v.getID()) = " + ChunkID.getLocalID(v.getID()));
+                SimpleEdge e = new SimpleEdge();
+                e.setID(ChunkID.getChunkID(nodeID, 9188));
+                chunkService.get().get(e);
+                System.out.println("Get on master edge 1");
+                System.out.println("e.getSinkID() = " + e.getSinkID());
+                System.out.println("e.getSourceID() = " + e.getSourceID());
+                e = new SimpleEdge();
+                e.setID(ChunkID.getChunkID(nodeID, 9189));
+                chunkService.get().get(e);
+                System.out.println("Get on master edge 4");
+                System.out.println("e.getSinkID() = " + e.getSinkID());
+                System.out.println("e.getSourceID() = " + e.getSourceID());
+            }
+        }
 
-        System.out.println(v.toString());
-
-        this.signalShutdown();
         System.exit(0);
     }
 

@@ -53,7 +53,7 @@ public class EdgesLoadingTask implements Task {
         short nodeID = p_bootService.getNodeID();
 
         if (m_edgeLoaderName.equals(LDBCEdgeLoader.class.getName())) {
-            loader = new LDBCEdgeLoader(m_graph.getNumberOfEdgesOfSlave(nodeID), m_metaData, p_chunkLocalService, p_chunkService, nodeID);
+            loader = new LDBCEdgeLoader(m_graph, m_metaData, p_chunkLocalService, p_chunkService, nodeID);
         }
         loader.readFile(Paths.get(m_edgeFilePath), m_graph);
 

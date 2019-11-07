@@ -15,7 +15,6 @@ public class VertexLoadingConsumer implements Runnable {
     private ChunkLocalService m_chunkLocalService;
     private ChunkService m_chunkService;
     private CountDownLatch m_countDownLatch;
-
     private static final Logger LOGGER = LogManager.getFormatterLogger(VertexLoadingConsumer.class.getSimpleName());
     final int VERTEX_PACKAGE_SIZE = 10_000;
 
@@ -30,11 +29,11 @@ public class VertexLoadingConsumer implements Runnable {
     public void run() {
         try {
             System.out.println("Start creating vertices");
+
             int processedVid = 0;
             long[] p_cids;
-            SimpleVertex v = new SimpleVertex();
             SimpleVertex[] vertices;
-
+            SimpleVertex v = new SimpleVertex();
             while (m_countDownLatch.getCount() != 0) {
                 int nextPackageSize = m_countDownLatch.getCount() - VERTEX_PACKAGE_SIZE < 0 ? (int) m_countDownLatch.getCount() : VERTEX_PACKAGE_SIZE;
                 p_cids = new long[nextPackageSize];
@@ -51,7 +50,7 @@ public class VertexLoadingConsumer implements Runnable {
                     }
                 }
                 int successfulCreates = m_chunkLocalService.createLocal().create(p_cids, nextPackageSize, v.sizeofObject(), true, false);
-                
+
                 if (successfulCreates != nextPackageSize) {
                     LOGGER.error("Error: %d vertices were not created", VERTEX_PACKAGE_SIZE - successfulCreates);
                 }
